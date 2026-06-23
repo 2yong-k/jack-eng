@@ -94,14 +94,26 @@ CRON_SECRET=또-다른-임의의-긴-문자열      # 매일 토픽 cron 인증�
 
 ## 5. DB 스키마 반영
 
-`.env.local`이 채워진 상태에서:
+두 가지 방식이 있습니다. 처음엔 **push**가 가장 간단합니다.
+
+**A. push (간단·dev 권장)** — 스키마를 DB에 직접 동기화:
 
 ```bash
 npm run db:push
 ```
 
-`topics`, `sessions`, `corrections`, `expressions`, `daily_progress` 테이블이 생성됩니다.
-Supabase/Neon 대시보드의 Table editor에서 생성 확인 가능합니다.
+**B. generate → migrate (버전 관리·프로덕션 권장)** — 변경분을 SQL 파일로 남기고 적용:
+
+```bash
+npm run db:gen      # db/migrations/*.sql 생성 (DB 연결 불필요, 깃에 커밋)
+npm run db:migrate  # 생성된 마이그레이션을 DB에 적용
+```
+
+> 타입은 별도 생성이 필요 없습니다 — `db/schema.ts`의 `$inferSelect`가 스키마에서 자동 추론합니다.
+> DB 내용을 GUI로 보려면: `npm run db:studio` (Drizzle Studio)
+
+둘 중 무엇을 쓰든 `topics`, `sessions`, `corrections`, `expressions`, `daily_progress` 테이블이 생성됩니다.
+Supabase/Neon 대시보드의 Table editor에서 확인 가능합니다.
 
 ---
 
