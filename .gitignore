@@ -24,6 +24,10 @@
 .DS_Store
 *.pem
 
+# local agent harness (not shared)
+CLAUDE.md
+AGENTS.md
+
 # debug
 npm-debug.log*
 yarn-debug.log*
