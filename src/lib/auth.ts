@@ -26,6 +26,12 @@ export function authToken(passphrase: string): Promise<string> {
   return sha256Hex(`${LABEL}:${passphrase}`)
 }
 
+/** Constant-time equality for secrets of any length (hash-compared, no length leak). */
+export async function secretEquals(a: string, b: string): Promise<boolean> {
+  const [ha, hb] = await Promise.all([sha256Hex(a), sha256Hex(b)])
+  return timingSafeEqual(ha, hb)
+}
+
 /** Submitted passphrase matches the configured one (constant-time, hash-compared). */
 export async function verifyPassphrase(input: string, configured: string | undefined): Promise<boolean> {
   if (!configured) return false

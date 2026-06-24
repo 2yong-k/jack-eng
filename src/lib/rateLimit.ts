@@ -26,8 +26,11 @@ export function rateLimit(
 }
 
 function clientKey(req: NextRequest): string {
+  // Prefer the auth token, then the platform-set x-real-ip (Vercel), and only
+  // then the client-spoofable x-forwarded-for. The IP fallback is best-effort.
   return (
     req.cookies.get('auth')?.value ??
+    req.headers.get('x-real-ip')?.trim() ??
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     'anon'
   )

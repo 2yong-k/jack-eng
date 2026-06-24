@@ -23,16 +23,16 @@ export function TopicCard({ topic }: { topic: Topic }) {
       <div>
         <p className="text-muted mb-1.5 text-xs font-medium">시작 질문</p>
         <ul className="text-fg/90 flex list-disc flex-col gap-1 pl-5 text-sm" lang="en">
-          {topic.seedQuestions.map((q) => (
-            <li key={q}>{q}</li>
+          {topic.seedQuestions.map((q, i) => (
+            <li key={`${q}-${i}`}>{q}</li>
           ))}
         </ul>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        {topic.targetExpressions.map((e) => (
+        {topic.targetExpressions.map((e, i) => (
           <span
-            key={e}
+            key={`${e}-${i}`}
             lang="en"
             className="bg-surface-muted text-fg/80 rounded-full px-2.5 py-1 text-xs"
           >

@@ -21,15 +21,21 @@ export async function POST(req: NextRequest) {
   }
   const { topic, messages } = parsed.data
 
-  const stream = await anthropic.messages
-    .create({
-      model: MODELS.chat,
-      max_tokens: 512,
-      stream: true,
-      system: buildChatSystemPrompt(topic),
-      messages,
-    })
-    .catch(() => null)
+  // Wrapper try/catch (not a bare .catch) also covers a synchronous throw from
+  // the lazy anthropic proxy, e.g. a missing ANTHROPIC_API_KEY → 502 (not 500).
+  const stream = await (async () => {
+    try {
+      return await anthropic.messages.create({
+        model: MODELS.chat,
+        max_tokens: 512,
+        stream: true,
+        system: buildChatSystemPrompt(topic),
+        messages,
+      })
+    } catch {
+      return null
+    }
+  })()
   if (!stream) {
     return NextResponse.json({ error: 'upstream model error' }, { status: 502 })
   }

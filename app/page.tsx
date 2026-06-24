@@ -4,6 +4,7 @@ import { dailyProgress } from '@/db/schema'
 import { anthropic } from '@/src/lib/anthropic'
 import { getOrCreateTopic } from '@/src/lib/topics'
 import { todayKST } from '@/src/lib/datetime'
+import { displayStreak } from '@/src/lib/streak'
 import { TopicCard } from '@/src/components/TopicCard'
 import { StreakBadge } from '@/src/components/StreakBadge'
 import { ConversationView } from '@/src/components/ConversationView'
@@ -21,7 +22,7 @@ export default async function Home() {
       db.select().from(dailyProgress).orderBy(desc(dailyProgress.date)).limit(1),
     ])
     topic = t
-    streak = prog[0]?.streakCount ?? 0
+    streak = displayStreak(prog[0]?.streakCount ?? 0, prog[0]?.date ?? null, today)
   } catch {
     return (
       <main id="main" className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center gap-3 px-4 py-16 text-center">

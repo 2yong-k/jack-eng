@@ -4,6 +4,8 @@ const isProd = process.env.NODE_ENV === 'production'
 
 // 'unsafe-eval' is only needed for dev HMR; keep it out of production.
 const scriptSrc = isProd ? "script-src 'self' 'unsafe-inline'" : "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+// Dev needs the HMR websocket; prod stays strict.
+const connectSrc = isProd ? "connect-src 'self'" : "connect-src 'self' ws: wss:"
 
 const csp = [
   "default-src 'self'",
@@ -11,7 +13,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
-  "connect-src 'self'",
+  connectSrc,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

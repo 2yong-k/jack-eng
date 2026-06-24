@@ -42,8 +42,8 @@ const tool: Anthropic.Tool = {
 }
 
 export async function POST(req: NextRequest) {
-  // Opus is the costliest path: cap tightly (matches "one review per session").
-  const limited = enforceRateLimit(req, { bucket: 'review', limit: 20, windowMs: 86_400_000 })
+  // Opus is the costliest path: cap per day (headroom absorbs retry/502 bursts).
+  const limited = enforceRateLimit(req, { bucket: 'review', limit: 50, windowMs: 86_400_000 })
   if (limited) return limited
 
   let body: unknown

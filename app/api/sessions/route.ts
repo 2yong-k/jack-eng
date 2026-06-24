@@ -5,8 +5,12 @@ import { sessions, corrections, expressions, dailyProgress } from '@/db/schema'
 import { nextStreak } from '@/src/lib/streak'
 import { todayKST } from '@/src/lib/datetime'
 import { SessionRequestSchema } from '@/src/lib/schemas'
+import { enforceRateLimit } from '@/src/lib/rateLimit'
 
 export async function POST(req: NextRequest) {
+  const limited = enforceRateLimit(req, { bucket: 'sessions', limit: 60, windowMs: 60_000 })
+  if (limited) return limited
+
   let raw: unknown
   try {
     raw = await req.json()

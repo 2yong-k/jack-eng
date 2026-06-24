@@ -8,21 +8,25 @@ export const CORRECTION_TYPES = ['grammar', 'word-choice', 'naturalness'] as con
 // ─── LLM output (tool_use) schemas — validated with safeParse → 502 ───────────
 
 export const ReviewSchema = z.object({
-  corrections: z.array(
-    z.object({
-      original: z.string(),
-      corrected: z.string(),
-      explanation: z.string(),
-      type: z.enum(CORRECTION_TYPES),
-    }),
-  ),
-  expressions: z.array(
-    z.object({
-      text: z.string(),
-      meaning: z.string(),
-      example: z.string(),
-    }),
-  ),
+  corrections: z
+    .array(
+      z.object({
+        original: z.string(),
+        corrected: z.string(),
+        explanation: z.string(),
+        type: z.enum(CORRECTION_TYPES),
+      }),
+    )
+    .max(100),
+  expressions: z
+    .array(
+      z.object({
+        text: z.string(),
+        meaning: z.string(),
+        example: z.string(),
+      }),
+    )
+    .max(100),
 })
 export type ReviewResult = z.infer<typeof ReviewSchema>
 

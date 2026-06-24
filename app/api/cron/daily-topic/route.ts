@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { anthropic } from '@/src/lib/anthropic'
 import { getOrCreateTopic, InvalidTopicError } from '@/src/lib/topics'
 import { tomorrowKST } from '@/src/lib/datetime'
-import { timingSafeEqual } from '@/src/lib/auth'
+import { secretEquals } from '@/src/lib/auth'
 
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET
@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'cron not configured' }, { status: 500 })
   }
   const got = req.headers.get('authorization') ?? ''
-  if (!timingSafeEqual(got, `Bearer ${secret}`)) {
+  if (!(await secretEquals(got, `Bearer ${secret}`))) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
   try {

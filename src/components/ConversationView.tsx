@@ -33,6 +33,7 @@ export function ConversationView({ topic }: { topic: Topic }) {
     setMessages(next)
     setDraft('')
     speech.setTranscript('')
+    speech.clearError()
     setError(null)
     setSending(true)
     let assistantId: string | null = null
@@ -61,7 +62,9 @@ export function ConversationView({ topic }: { topic: Topic }) {
       // Roll back the optimistic turn and let the user retry with their text restored.
       const discard = new Set([userMsg.id, assistantId].filter(Boolean) as string[])
       setMessages((m) => m.filter((x) => !discard.has(x.id)))
-      setDraft(value)
+      // Restore the text where the user will see it: transcript (voice) or draft (text).
+      if (speech.mode === 'voice') speech.setTranscript(value)
+      else setDraft(value)
       setError('답변을 받지 못했어요. 다시 시도해 주세요.')
     } finally {
       setSending(false)
@@ -161,7 +164,7 @@ export function ConversationView({ topic }: { topic: Topic }) {
           <button
             type="button"
             onClick={() => (speech.listening ? speech.stop() : speech.start())}
-            disabled={sending}
+            disabled={sending || speech.speaking}
             aria-pressed={speech.listening}
             aria-label={speech.listening ? '녹음 멈추기' : '말하기 시작'}
             className="bg-primary text-primary-foreground inline-flex h-12 items-center gap-2 rounded-full px-5 font-medium disabled:opacity-40"
