@@ -1,13 +1,17 @@
 import { expect, test, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: () => {} }) }))
 vi.mock('@/src/hooks/useSpeech', () => ({
   useSpeech: () => ({
     mode: 'text',
     support: { stt: false, tts: false },
     listening: false,
+    speaking: false,
     transcript: '',
+    error: null,
     setTranscript: () => {},
+    clearError: () => {},
     start: () => {},
     stop: () => {},
     speak: () => {},
@@ -17,9 +21,15 @@ vi.mock('@/src/hooks/useSpeech', () => ({
 import { ConversationView } from '@/src/components/ConversationView'
 import type { Topic } from '@/db/schema'
 
-const topic = { id: '1', title: 'T', scenario: 'pitch' } as unknown as Topic
+const topic = {
+  id: '1',
+  title: 'T',
+  scenario: 'pitch',
+  seedQuestions: ['Q1'],
+  targetExpressions: [],
+} as unknown as Topic
 
-test('shows text input when speech unsupported', () => {
+test('falls back to a labeled text input when speech is unsupported', () => {
   render(<ConversationView topic={topic} />)
-  expect(screen.getByPlaceholderText(/type/i)).toBeInTheDocument()
+  expect(screen.getByLabelText('답장 입력')).toBeInTheDocument()
 })
