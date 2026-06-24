@@ -14,7 +14,13 @@ browser Web Speech API (STT/TTS) · Vitest.
 
 ## Local setup
 
-1. Copy env and fill values:
+1. Install dependencies (uses pnpm):
+
+   ```bash
+   pnpm install
+   ```
+
+2. Copy env and fill values:
 
    ```bash
    cp .env.example .env.local
@@ -25,16 +31,16 @@ browser Web Speech API (STT/TTS) · Vitest.
    - `APP_PASSPHRASE` — the secret you type on `/login` to access the app.
    - `CRON_SECRET` — bearer secret the daily-topic cron must send.
 
-2. Push the schema to your database:
+3. Push the schema to your database:
 
    ```bash
-   npm run db:push
+   pnpm db:push
    ```
 
-3. Run the dev server:
+4. Run the dev server:
 
    ```bash
-   npm run dev
+   pnpm dev
    ```
 
    Open http://localhost:3000, enter your passphrase, and start talking.
@@ -42,8 +48,8 @@ browser Web Speech API (STT/TTS) · Vitest.
 ## Tests
 
 ```bash
-npm test          # vitest run (contracts + boundaries)
-npx tsc --noEmit  # typecheck
+pnpm test       # vitest run (contracts + boundaries)
+pnpm typecheck  # tsc --noEmit
 ```
 
 ## Deploy (Vercel)
@@ -53,7 +59,7 @@ npx tsc --noEmit  # typecheck
 3. The daily-topic cron is registered automatically from `vercel.json`
    (runs `/api/cron/daily-topic` at 18:00 UTC). The route checks
    `Authorization: Bearer $CRON_SECRET`.
-4. Run `npm run db:push` against the production `DATABASE_URL` once.
+4. Run `pnpm db:push` against the production `DATABASE_URL` once.
 
 ## Notes
 

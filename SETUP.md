@@ -9,7 +9,7 @@
 | 항목 | 버전/비고 | 확인 명령 |
 |------|-----------|-----------|
 | Node.js | 20.19+ 또는 22.13+ 권장 | `node -v` |
-| npm | Node에 포함 | `npm -v` |
+| pnpm | 9+ (패키지 매니저). 없으면 `npm i -g pnpm` 또는 `corepack enable pnpm` | `pnpm -v` |
 | Git | 최신 | `git --version` |
 | 브라우저 | **Chrome 권장** (Web Speech 음성 인식/합성 최적) | — |
 
@@ -23,14 +23,14 @@
 
 ```bash
 cd /Users/jack/git/jack-eng-talking   # 이미 코드가 있는 위치
-npm install
+pnpm install
 ```
 
 설치 후 한 번 점검:
 
 ```bash
-npm test          # 16개 통과해야 정상
-npx tsc --noEmit  # 타입 에러 없어야 정상
+pnpm test       # 16개 통과해야 정상
+pnpm typecheck  # 타입 에러 없어야 정상
 ```
 
 ---
@@ -99,18 +99,18 @@ CRON_SECRET=또-다른-임의의-긴-문자열      # 매일 토픽 cron 인증�
 **A. push (간단·dev 권장)** — 스키마를 DB에 직접 동기화:
 
 ```bash
-npm run db:push
+pnpm db:push
 ```
 
 **B. generate → migrate (버전 관리·프로덕션 권장)** — 변경분을 SQL 파일로 남기고 적용:
 
 ```bash
-npm run db:gen      # db/migrations/*.sql 생성 (DB 연결 불필요, 깃에 커밋)
-npm run db:migrate  # 생성된 마이그레이션을 DB에 적용
+pnpm db:gen      # db/migrations/*.sql 생성 (DB 연결 불필요, 깃에 커밋)
+pnpm db:migrate  # 생성된 마이그레이션을 DB에 적용
 ```
 
 > 타입은 별도 생성이 필요 없습니다 — `db/schema.ts`의 `$inferSelect`가 스키마에서 자동 추론합니다.
-> DB 내용을 GUI로 보려면: `npm run db:studio` (Drizzle Studio)
+> DB 내용을 GUI로 보려면: `pnpm db:studio` (Drizzle Studio)
 
 둘 중 무엇을 쓰든 `topics`, `sessions`, `corrections`, `expressions`, `daily_progress` 테이블이 생성됩니다.
 Supabase/Neon 대시보드의 Table editor에서 확인 가능합니다.
@@ -120,7 +120,7 @@ Supabase/Neon 대시보드의 Table editor에서 확인 가능합니다.
 ## 6. 로컬 실행
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 1. 브라우저(Chrome)에서 http://localhost:3000 접속
@@ -166,12 +166,14 @@ git push -u origin main
    - `CRON_SECRET`
 4. **Deploy** 클릭
 
+> Vercel은 `pnpm-lock.yaml` + `package.json`의 `packageManager` 필드를 보고 **pnpm을 자동 사용**합니다 — install/build 명령을 따로 바꿀 필요 없음.
+
 ### 8-3. 프로덕션 DB 스키마 반영 (최초 1회)
 
 로컬에서 프로덕션 `DATABASE_URL`을 임시로 넣고 한 번 실행:
 
 ```bash
-DATABASE_URL='프로덕션_연결문자열' npm run db:push
+DATABASE_URL='프로덕션_연결문자열' pnpm db:push
 ```
 
 (또는 Supabase/Neon이 로컬과 같은 DB라면 5단계로 이미 완료된 상태)
@@ -189,7 +191,7 @@ DATABASE_URL='프로덕션_연결문자열' npm run db:push
 
 | 증상 | 원인 / 해결 |
 |------|-------------|
-| `DATABASE_URL is not set` | `.env.local` 누락 또는 `npm run dev` 재시작 안 함. 값 확인 후 서버 재시작 |
+| `DATABASE_URL is not set` | `.env.local` 누락 또는 `pnpm dev` 재시작 안 함. 값 확인 후 서버 재시작 |
 | `ANTHROPIC_API_KEY is not set` | 위와 동일. 키 오타·따옴표 확인 |
 | 🎙️ 버튼이 없고 텍스트 입력만 뜸 | 브라우저가 Web Speech 미지원. **Chrome** 사용 권장 (iOS Safari는 부분 지원) |
 | 마이크가 안 들림 | 브라우저 주소창의 마이크 권한 허용 확인. `http://localhost`/HTTPS에서만 동작 |
@@ -197,7 +199,7 @@ DATABASE_URL='프로덕션_연결문자열' npm run db:push
 | 로그인이 계속 튕김 | `APP_PASSPHRASE` 값과 입력값 불일치. 공백·오타 확인 |
 | "API Error" / 일시적 실패 | Anthropic 또는 네트워크 일시 오류. 잠시 후 재시도 |
 | cron이 안 도는 듯 | Vercel Cron은 **프로덕션 배포에서만** 동작(프리뷰 X). 대시보드 Cron Jobs 로그 확인 |
-| DB 변경이 반영 안 됨 | 스키마 수정 후 `npm run db:push` 재실행 |
+| DB 변경이 반영 안 됨 | 스키마 수정 후 `pnpm db:push` 재실행 |
 
 수동으로 토픽 생성을 테스트하려면 (배포 후):
 

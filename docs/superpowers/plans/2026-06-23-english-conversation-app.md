@@ -27,14 +27,14 @@
 - Test: `src/lib/__tests__/smoke.test.ts`
 
 **Interfaces:**
-- Produces: a running Next.js app, `npm test` (Vitest) wired, Tailwind active.
+- Produces: a running Next.js app, `pnpm test` (Vitest) wired, Tailwind active.
 
 - [ ] **Step 1: Scaffold Next.js + deps**
 
 ```bash
-npx create-next-app@latest . --typescript --tailwind --app --eslint --src-dir=false --import-alias "@/*" --no-turbopack --yes
-npm i @anthropic-ai/sdk zod drizzle-orm postgres
-npm i -D drizzle-kit vitest @vitejs/plugin-react @testing-library/react @testing-library/jest-dom jsdom
+pnpm dlx create-next-app@latest . --typescript --tailwind --app --eslint --src-dir=false --import-alias "@/*" --no-turbopack --yes
+pnpm add @anthropic-ai/sdk zod drizzle-orm postgres
+pnpm add -D drizzle-kit vitest @vitejs/plugin-react @testing-library/react @testing-library/jest-dom jsdom
 ```
 
 - [ ] **Step 2: Set tsconfig strict flags**
@@ -71,7 +71,7 @@ test('smoke', () => { expect(1 + 1).toBe(2) })
 
 - [ ] **Step 5: Run test (expect PASS)**
 
-Run: `npm test`
+Run: `pnpm test`
 Expected: 1 passed.
 
 - [ ] **Step 6: Write `.env.example`**
@@ -116,7 +116,7 @@ test('tables expose expected columns', () => {
 
 - [ ] **Step 2: Run (expect FAIL — module not found)**
 
-Run: `npm test -- schema`
+Run: `pnpm test schema`
 Expected: FAIL, cannot resolve `@/db/schema`.
 
 - [ ] **Step 3: Write schema**
@@ -196,7 +196,7 @@ export default defineConfig({
 
 - [ ] **Step 4: Run (expect PASS)**
 
-Run: `npm test -- schema`
+Run: `pnpm test schema`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -228,7 +228,7 @@ test('model ids are pinned', () => {
 })
 ```
 
-- [ ] **Step 2: Run (expect FAIL)** — `npm test -- models`
+- [ ] **Step 2: Run (expect FAIL)** — `pnpm test models`
 
 - [ ] **Step 3: Implement**
 
@@ -248,7 +248,7 @@ if (!apiKey) throw new Error('ANTHROPIC_API_KEY is not set')
 export const anthropic = new Anthropic({ apiKey })
 ```
 
-- [ ] **Step 4: Run (expect PASS)** — `npm test -- models`
+- [ ] **Step 4: Run (expect PASS)** — `pnpm test models`
 
 - [ ] **Step 5: Commit** — `git add -A && git commit -m "feat: add anthropic client and pinned model config"`
 
@@ -280,7 +280,7 @@ test('rejects malformed review (bad type enum)', () => {
 })
 ```
 
-- [ ] **Step 2: Run (expect FAIL)** — `npm test -- schemas`
+- [ ] **Step 2: Run (expect FAIL)** — `pnpm test schemas`
 
 - [ ] **Step 3: Implement schemas**
 
@@ -317,7 +317,7 @@ export const TopicSchema = z.object({
 export type TopicResult = z.infer<typeof TopicSchema>
 ```
 
-- [ ] **Step 4: Run (expect PASS)** — `npm test -- schemas`
+- [ ] **Step 4: Run (expect PASS)** — `pnpm test schemas`
 
 - [ ] **Step 5: Implement `/api/review`**
 
@@ -393,7 +393,7 @@ test('system prompt embeds topic + stays-on-topic instruction', () => {
 })
 ```
 
-- [ ] **Step 2: Run (expect FAIL)** — `npm test -- prompts`
+- [ ] **Step 2: Run (expect FAIL)** — `pnpm test prompts`
 
 - [ ] **Step 3: Implement prompts**
 
@@ -410,7 +410,7 @@ export function buildChatSystemPrompt(topic: { title: string; scenario: string }
 }
 ```
 
-- [ ] **Step 4: Run (expect PASS)** — `npm test -- prompts`
+- [ ] **Step 4: Run (expect PASS)** — `pnpm test prompts`
 
 - [ ] **Step 5: Implement `/api/chat` (streaming)**
 
@@ -470,7 +470,7 @@ test('translate result requires english + example', () => {
 })
 ```
 
-- [ ] **Step 2: Run (expect PASS — schema already defined in Task 4)** — `npm test -- schemas`
+- [ ] **Step 2: Run (expect PASS — schema already defined in Task 4)** — `pnpm test schemas`
 
 - [ ] **Step 3: Implement `/api/translate`**
 
@@ -539,7 +539,7 @@ test('generateTopicInput validates model output against TopicSchema', async () =
 })
 ```
 
-- [ ] **Step 2: Run (expect FAIL)** — `npm test -- topics`
+- [ ] **Step 2: Run (expect FAIL)** — `pnpm test topics`
 
 - [ ] **Step 3: Implement `topics.ts`**
 
@@ -585,7 +585,7 @@ export async function getOrCreateTopic(client: Anthropic, isoDate: string) {
 }
 ```
 
-- [ ] **Step 4: Run (expect PASS)** — `npm test -- topics`
+- [ ] **Step 4: Run (expect PASS)** — `pnpm test topics`
 
 - [ ] **Step 5: Implement endpoints + cron config**
 
@@ -657,7 +657,7 @@ test('reports stt support when SpeechRecognition present', () => {
 })
 ```
 
-- [ ] **Step 2: Run (expect FAIL)** — `npm test -- useSpeech`
+- [ ] **Step 2: Run (expect FAIL)** — `pnpm test useSpeech`
 
 - [ ] **Step 3: Implement support detection**
 
@@ -672,7 +672,7 @@ export function detectSpeechSupport(): { stt: boolean; tts: boolean } {
 }
 ```
 
-- [ ] **Step 4: Run (expect PASS)** — `npm test -- useSpeech`
+- [ ] **Step 4: Run (expect PASS)** — `pnpm test useSpeech`
 
 - [ ] **Step 5: Implement the hook**
 
@@ -739,7 +739,7 @@ test('same day keeps streak', () => { expect(nextStreak(3, '2026-06-23', '2026-0
 test('no prior streak starts at 1', () => { expect(nextStreak(0, null, '2026-06-23')).toBe(1) })
 ```
 
-- [ ] **Step 2: Run (expect FAIL)** — `npm test -- streak`
+- [ ] **Step 2: Run (expect FAIL)** — `pnpm test streak`
 
 - [ ] **Step 3: Implement**
 
@@ -753,7 +753,7 @@ export function nextStreak(prev: number, prevDate: string | null, today: string)
 }
 ```
 
-- [ ] **Step 4: Run (expect PASS)** — `npm test -- streak`
+- [ ] **Step 4: Run (expect PASS)** — `pnpm test streak`
 
 - [ ] **Step 5: Commit** — `git add -A && git commit -m "feat: add pure streak calculation"`
 
@@ -801,7 +801,7 @@ export async function POST(req: NextRequest) {
 }
 ```
 
-- [ ] **Step 2: Typecheck** — Run: `npx tsc --noEmit` → Expected: no errors.
+- [ ] **Step 2: Typecheck** — Run: `pnpm exec tsc --noEmit` → Expected: no errors.
 
 - [ ] **Step 3: Commit** — `git add -A && git commit -m "feat: add /api/sessions persistence + streak update"`
 
@@ -829,7 +829,7 @@ test('authed only with matching cookie', () => {
 })
 ```
 
-- [ ] **Step 2: Run (expect FAIL)** — `npm test -- auth`
+- [ ] **Step 2: Run (expect FAIL)** — `pnpm test auth`
 
 - [ ] **Step 3: Implement helper + middleware + login**
 
@@ -888,7 +888,7 @@ export default function Login() {
 }
 ```
 
-- [ ] **Step 4: Run (expect PASS)** — `npm test -- auth`
+- [ ] **Step 4: Run (expect PASS)** — `pnpm test auth`
 
 - [ ] **Step 5: Commit** — `git add -A && git commit -m "feat: add passphrase auth gate via middleware"`
 
@@ -918,7 +918,7 @@ test('shows text input when speech unsupported', () => {
 })
 ```
 
-- [ ] **Step 2: Run (expect FAIL)** — `npm test -- ConversationView`
+- [ ] **Step 2: Run (expect FAIL)** — `pnpm test ConversationView`
 
 - [ ] **Step 3: Implement `ConversationView` (mic/text + shadow + panic + end→review)**
 
@@ -1100,9 +1100,9 @@ export default async function Home() {
 }
 ```
 
-- [ ] **Step 6: Run (expect PASS)** — `npm test -- ConversationView`
+- [ ] **Step 6: Run (expect PASS)** — `pnpm test ConversationView`
 
-- [ ] **Step 7: Typecheck** — Run: `npx tsc --noEmit` → Expected: no errors.
+- [ ] **Step 7: Typecheck** — Run: `pnpm exec tsc --noEmit` → Expected: no errors.
 
 - [ ] **Step 8: Commit** — `git add -A && git commit -m "feat: add daily-loop UI (topic, conversation, shadow, panic, review, streak)"`
 
@@ -1113,7 +1113,7 @@ export default async function Home() {
 **Files:**
 - Create: `README.md`
 
-- [ ] **Step 1: Write README** with: env setup (`.env.example` → `.env.local`), `npm run db:push`, `npm run dev`, Vercel deploy steps (set env vars, Cron is auto-registered from `vercel.json`, set `CRON_SECRET`), and the Chrome-recommended note for Web Speech.
+- [ ] **Step 1: Write README** with: env setup (`.env.example` → `.env.local`), `pnpm db:push`, `pnpm dev`, Vercel deploy steps (set env vars, Cron is auto-registered from `vercel.json`, set `CRON_SECRET`), and the Chrome-recommended note for Web Speech.
 
 - [ ] **Step 2: Commit** — `git add -A && git commit -m "docs: add README with setup and deploy notes"`
 
