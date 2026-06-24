@@ -6,11 +6,11 @@
 
 **Architecture:** Next.js (App Router) full-stack on Vercel. Browser Web Speech API for STT/TTS. Postgres (Supabase/Neon) via Drizzle ORM. Anthropic SDK with model split: Sonnet 4.6 for high-frequency chat/translate/topic-gen, Opus 4.8 for the once-per-session correction report. Vercel Cron generates the daily topic.
 
-**Tech Stack:** Next.js 15 (App Router, RSC), TypeScript (strict), Tailwind + shadcn/ui, Drizzle ORM + Postgres, `@anthropic-ai/sdk`, Zod, Vitest + Testing Library.
+**Tech Stack:** Next.js 16 (App Router, RSC), React 19, TypeScript (strict), Tailwind 4 (plain components; shadcn/ui considered but not adopted), Drizzle ORM + Postgres, `@anthropic-ai/sdk`, Zod, Vitest + Testing Library. Package manager: pnpm.
 
 ## Global Constraints
 
-- TypeScript strict mode; `noUncheckedIndexedAccess: true`; module: NodeNext. No `any`/`unknown` in app code.
+- TypeScript strict mode; `noUncheckedIndexedAccess: true`; `module: esnext` / `moduleResolution: bundler` (Next's target — NodeNext would break the extensionless `@/…` imports). No `any`/`unknown` in app code.
 - Model IDs (exact): chat/translate/topic → `claude-sonnet-4-6`; review → `claude-opus-4-8`.
 - All structured model output (`/api/review`, `/api/translate`, topic-gen) MUST be validated with Zod; malformed output fails loudly.
 - Single user — no account system. Access gated by a passphrase env var.
@@ -23,7 +23,7 @@
 ### Task 1: Project scaffold + tooling
 
 **Files:**
-- Create: `package.json`, `tsconfig.json`, `next.config.ts`, `tailwind.config.ts`, `postcss.config.mjs`, `vitest.config.ts`, `app/layout.tsx`, `app/page.tsx`, `app/globals.css`, `.env.example`
+- Create: `package.json`, `tsconfig.json`, `next.config.ts`, `postcss.config.mjs`, `vitest.config.ts`, `app/layout.tsx`, `app/page.tsx`, `app/globals.css`, `.env.example` (Tailwind 4 has no JS config file — configured via `postcss.config.mjs` + `globals.css`)
 - Test: `src/lib/__tests__/smoke.test.ts`
 
 **Interfaces:**
@@ -81,6 +81,8 @@ ANTHROPIC_API_KEY=sk-ant-xxx
 DATABASE_URL=postgres://user:pass@host:5432/db
 APP_PASSPHRASE=choose-a-long-secret
 ```
+
+> Progressive snapshot. `CRON_SECRET` is added in Task 7; the final `.env.example` has all 4 keys, and `package.json` ends with `db:push`/`db:gen`/`db:migrate`/`db:studio`.
 
 - [ ] **Step 7: Commit**
 

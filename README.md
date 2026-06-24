@@ -8,9 +8,9 @@ See the design and plan under `docs/superpowers/`.
 
 ## Stack
 
-Next.js 16 (App Router) · TypeScript · Tailwind 4 · Drizzle ORM + Postgres ·
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind 4 · Drizzle ORM + Postgres ·
 `@anthropic-ai/sdk` (Sonnet 4.6 for chat/translate/topic, Opus 4.8 for review) ·
-browser Web Speech API (STT/TTS) · Vitest.
+browser Web Speech API (STT/TTS) · Vitest. Package manager: pnpm.
 
 ## Local setup
 
@@ -66,7 +66,12 @@ pnpm typecheck  # tsc --noEmit
 - **Browser support:** Web Speech (STT/TTS) is best on Chrome (desktop / Android). On
   browsers without speech support the app falls back to a text input — fully usable, just
   without voice. iOS Safari support is partial.
-- **Cost:** single-user daily usage is a few dollars/month at most (Sonnet for chat,
-  one Opus review per session).
+- **Cost / abuse:** single-user daily usage is a few dollars/month at most (Sonnet for chat,
+  one Opus review per session). LLM routes are rate-limited (best-effort, per instance) and
+  all request bodies are Zod-validated to cap token cost.
+- **Day boundary:** "today" is computed in KST (`src/lib/datetime.ts`), so the daily topic and
+  streak roll over at local midnight, not UTC.
+- **Security:** passphrase gate via middleware; the auth cookie stores a derived SHA-256 token
+  (not the passphrase). Security headers + CSP are set in `next.config.ts`.
 - **Roadmap (not built yet):** SRS flashcards over saved expressions, Whisper-based
   pronunciation scoring, daily curated video recommendations.

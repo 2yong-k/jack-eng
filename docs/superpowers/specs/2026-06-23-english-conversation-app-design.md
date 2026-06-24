@@ -43,7 +43,7 @@ targets the user's specific weaknesses:
 | Interaction | Voice-first | Directly trains ears + mouth (the stated weakness). |
 | Correction timing | **(A) End-of-session report only** | Keeps conversation flowing; matches immersion learning. A mid-conversation "explain this" button covers the rare need for instant help. |
 | Hosting | Cloud (Vercel) + user's own Anthropic API key | Accessible from phone/laptop abroad; daily cron requires an always-on backend. |
-| Stack | Next.js (App Router) + TypeScript + Tailwind/shadcn | One repo for front + back; Vercel Cron for daily content. |
+| Stack | Next.js 16 (App Router) + React 19 + TypeScript + Tailwind 4 (plain components; shadcn considered, not adopted) | One repo for front + back; Vercel Cron for daily content. |
 | Speech | Browser Web Speech API (STT + TTS) | Zero extra cost, instant. Quality varies (Chrome-optimal); acceptable for MVP, swappable later. |
 | DB | Postgres (Supabase or Neon) + Drizzle ORM | Standard, typed, serverless-friendly. |
 | Auth | Minimal passphrase gate / Vercel password protection | Single user; no account system needed. |
@@ -148,3 +148,25 @@ cron (daily) ──generate topic (idempotent)──> topics table
 - Assumes Supabase free tier is sufficient for single-user volume (it is, by a wide margin).
 - API cost assumption: a single user's daily usage on Sonnet + one Opus review/day is a few
   dollars/month at most.
+
+## 12. Post-MVP hardening pass (2026-06-25)
+
+Applied after a multi-dimensional audit (58 confirmed findings). Highlights:
+
+- **Correctness:** day boundaries computed in **KST** (`src/lib/datetime.ts`), fixing a
+  UTC off-by-one in streak/topic/`daily_progress`. Client `send`/`endSession` now have full
+  error handling (`res.ok`, try/catch, optimistic-turn rollback, empty-transcript guard);
+  `useSpeech` handles `onerror`/cleanup/abort and cancels TTS on unmount; `TextDecoder` uses
+  `{ stream: true }`.
+- **Security:** all request bodies Zod-validated (400); auth cookie holds a derived SHA-256
+  token (not the passphrase) with constant-time compare (Web Crypto, Edge-safe); cron secret
+  compared constant-time with empty-secret guard; per-instance rate limiting on LLM routes;
+  CSP + security headers in `next.config.ts`; route handlers wrapped in try/catch (typed
+  errors, no `issues` leak in prod).
+- **Data:** `scenario`/`correction_type` are `pgEnum` (DB-level domain), sharing `SCENARIOS`/
+  `CORRECTION_TYPES` with the Zod layer; `/api/sessions` re-validates the client-returned
+  review and writes session+corrections+expressions+progress in a single transaction.
+- **UI/UX & a11y:** design-token system (light/dark) replaces hardcoded colors; forms submit
+  on Enter with labeled inputs; loading/error/empty states; `aria-live`/`aria-pressed`/skip
+  link/focus-visible; distinct user/tutor bubbles; 44px touch targets; streak refresh via
+  `router.refresh()`.
