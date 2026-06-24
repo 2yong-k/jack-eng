@@ -5,6 +5,9 @@ import { topics } from '@/db/schema'
 import { MODELS } from '@/src/lib/models'
 import { TopicSchema, type TopicResult } from '@/src/lib/schemas'
 
+/** Thrown when the model's topic tool output is missing or fails validation. */
+export class InvalidTopicError extends Error {}
+
 const tool: Anthropic.Tool = {
   name: 'submit_topic',
   description: 'Submit a daily English practice topic for a blockchain CTO.',
@@ -35,8 +38,10 @@ export async function generateTopicInput(client: Anthropic): Promise<TopicResult
     ],
   })
   const block = msg.content.find((b) => b.type === 'tool_use')
-  if (!block || block.type !== 'tool_use') throw new Error('no topic tool output')
-  return TopicSchema.parse(block.input)
+  if (!block || block.type !== 'tool_use') throw new InvalidTopicError('no topic tool output')
+  const parsed = TopicSchema.safeParse(block.input)
+  if (!parsed.success) throw new InvalidTopicError('topic output failed schema validation')
+  return parsed.data
 }
 
 export async function getOrCreateTopic(client: Anthropic, isoDate: string) {

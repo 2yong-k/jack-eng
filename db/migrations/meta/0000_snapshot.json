@@ -1,5 +1,5 @@
 {
-  "id": "bd4d0017-dc3a-4084-a46c-23850dac6cb7",
+  "id": "ed434ba7-290e-4641-85f2-89c995875c7a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -41,7 +41,8 @@
         },
         "type": {
           "name": "type",
-          "type": "text",
+          "type": "correction_type",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         }
@@ -245,7 +246,8 @@
         },
         "scenario": {
           "name": "scenario",
-          "type": "text",
+          "type": "scenario",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
@@ -292,7 +294,27 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.correction_type": {
+      "name": "correction_type",
+      "schema": "public",
+      "values": [
+        "grammar",
+        "word-choice",
+        "naturalness"
+      ]
+    },
+    "public.scenario": {
+      "name": "scenario",
+      "schema": "public",
+      "values": [
+        "pitch",
+        "negotiation",
+        "technical",
+        "networking"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

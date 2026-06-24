@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { isAuthed } from '@/src/lib/auth'
+import { verifyAuthCookie } from '@/src/lib/auth'
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   if (
     pathname.startsWith('/login') ||
@@ -10,7 +10,7 @@ export function middleware(req: NextRequest) {
   ) {
     return NextResponse.next()
   }
-  if (!isAuthed(req.cookies.get('auth')?.value, process.env.APP_PASSPHRASE ?? '')) {
+  if (!(await verifyAuthCookie(req.cookies.get('auth')?.value, process.env.APP_PASSPHRASE))) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
   return NextResponse.next()

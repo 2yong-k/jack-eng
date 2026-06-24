@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server'
 import { anthropic } from '@/src/lib/anthropic'
-import { getOrCreateTopic } from '@/src/lib/topics'
+import { getOrCreateTopic, InvalidTopicError } from '@/src/lib/topics'
+import { todayKST } from '@/src/lib/datetime'
 
 export async function GET() {
-  const isoDate = new Date().toISOString().slice(0, 10)
-  const topic = await getOrCreateTopic(anthropic, isoDate)
-  return NextResponse.json(topic)
+  try {
+    const topic = await getOrCreateTopic(anthropic, todayKST())
+    return NextResponse.json(topic)
+  } catch (err) {
+    const status = err instanceof InvalidTopicError ? 502 : 500
+    return NextResponse.json({ error: 'failed to load topic' }, { status })
+  }
 }

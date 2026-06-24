@@ -1,9 +1,15 @@
-import { pgTable, uuid, text, jsonb, timestamp, boolean, integer, date } from 'drizzle-orm/pg-core'
+import { pgTable, pgEnum, uuid, text, jsonb, timestamp, boolean, integer, date } from 'drizzle-orm/pg-core'
+// Relative (not `@/`) import so drizzle-kit's loader resolves it. schemas.ts
+// depends only on zod, so no drizzle leaks into client bundles via this edge.
+import { SCENARIOS, CORRECTION_TYPES } from '../src/lib/schemas'
+
+export const scenarioEnum = pgEnum('scenario', SCENARIOS)
+export const correctionTypeEnum = pgEnum('correction_type', CORRECTION_TYPES)
 
 export const topics = pgTable('topics', {
   id: uuid('id').defaultRandom().primaryKey(),
   date: date('date').notNull().unique(),
-  scenario: text('scenario').notNull(), // 'pitch' | 'negotiation' | 'technical' | 'networking'
+  scenario: scenarioEnum('scenario').notNull(),
   title: text('title').notNull(),
   seedQuestions: jsonb('seed_questions').$type<string[]>().notNull(),
   targetExpressions: jsonb('target_expressions').$type<string[]>().notNull(),
@@ -29,7 +35,7 @@ export const corrections = pgTable('corrections', {
   original: text('original').notNull(),
   corrected: text('corrected').notNull(),
   explanation: text('explanation').notNull(),
-  type: text('type').notNull(), // 'grammar' | 'word-choice' | 'naturalness'
+  type: correctionTypeEnum('type').notNull(),
 })
 
 export const expressions = pgTable('expressions', {
