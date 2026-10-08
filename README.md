@@ -9,7 +9,7 @@ See the design and plan under `docs/superpowers/`.
 ## Stack
 
 Next.js 16 (App Router) · React 19 · TypeScript · Tailwind 4 · Drizzle ORM + Postgres ·
-`@anthropic-ai/sdk` (Sonnet 4.6 for chat/translate/topic, Opus 4.8 for review) ·
+`@anthropic-ai/sdk` (Sonnet 5.5 for chat/translate/topic, Opus 5.5 for review) ·
 browser Web Speech API (STT/TTS) · Vitest. Package manager: pnpm.
 
 ## Local setup

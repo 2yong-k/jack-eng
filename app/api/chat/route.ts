@@ -27,7 +27,8 @@ export async function POST(req: NextRequest) {
     try {
       return await anthropic.messages.create({
         model: MODELS.chat,
-        max_tokens: 512,
+        max_tokens: 1024,
+        output_config: { effort: 'low' },
         stream: true,
         system: buildChatSystemPrompt(topic),
         messages,

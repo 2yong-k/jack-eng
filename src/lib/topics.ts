@@ -11,6 +11,7 @@ export class InvalidTopicError extends Error {}
 const tool: Anthropic.Tool = {
   name: 'submit_topic',
   description: 'Submit a daily English practice topic for a blockchain CTO.',
+  strict: true,
   input_schema: {
     type: 'object',
     properties: {
@@ -20,20 +21,24 @@ const tool: Anthropic.Tool = {
       targetExpressions: { type: 'array', items: { type: 'string' } },
     },
     required: ['scenario', 'title', 'seedQuestions', 'targetExpressions'],
+    additionalProperties: false,
   },
 }
 
 export async function generateTopicInput(client: Anthropic): Promise<TopicResult> {
+  // Sonnet 5.5 rejects a forced tool_choice (400), so the prompt names the tool and the
+  // caller treats a missing tool_use block as a failure. Thinking is on by default and
+  // counts toward max_tokens; once-a-day generation can afford medium effort.
   const msg = await client.messages.create({
     model: MODELS.chat,
-    max_tokens: 1024,
+    max_tokens: 2048,
+    output_config: { effort: 'medium' },
     tools: [tool],
-    tool_choice: { type: 'tool', name: 'submit_topic' },
     messages: [
       {
         role: 'user',
         content:
-          'Create ONE English conversation practice topic for a Korean blockchain CTO who free-talks with foreign investors. Rotate scenarios across pitch/negotiation/technical/networking. Give 3 seed questions and 5 target expressions.',
+          'Create ONE English conversation practice topic for a Korean blockchain CTO who free-talks with foreign investors. Rotate scenarios across pitch/negotiation/technical/networking. Give 3 seed questions and 5 target expressions. Submit it by calling the submit_topic tool.',
       },
     ],
   })
